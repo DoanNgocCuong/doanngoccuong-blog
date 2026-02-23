@@ -16,7 +16,7 @@
 
 1. test_trace_no_create_langfuse_client.py
 
-```test_trace_no_create_langfuse_client.py
+```python
 import os
 import time
 from pathlib import Path
@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
 2. test_trace_create_langfuse_client_first.py
 
-```test_trace_create_langfuse_client_first.py
+```python
 import os
 import time
 from pathlib import Path
@@ -163,7 +163,7 @@ Link chi tiết: D:\GIT\robot-lesson-workflow\utils\docs\Stage1_OverheadOfLangFu
 ### 1.3.1 Ví dụ: Trong `robot_v2_services.webhook_service`
 - Ở đầu hàm `webhook_service`, ta sẽ đặt capture_input=False, **ghi metadata theo conversation** => điều này giúp làm giảm kích thước của JSON load vào Queue và sau đó bắn lên Langfuse (nói cách khác: chỉ đính kèm những trường “nhẹ” nhưng đủ để debug (ID + message tóm tắt + thông tin audio), không nhét cả payload to vào trace để tránh overhead & rò rỉ dữ liệu)
 
-```1242:1251:app/api/services/robot_v2_services.py
+```python
 @observe(name="robot-v2.webhook-service", capture_input=False, capture_output=True)
 async def webhook(self, payload: Dict[str, Any]) -> Dict[str, Any]:
 ...
