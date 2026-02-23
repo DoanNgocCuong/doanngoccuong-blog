@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "doanngoccuong-blog-astro",
+  "rootDirectory": "astro-blog",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "astro",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD . || echo \"changes\""
+}
+

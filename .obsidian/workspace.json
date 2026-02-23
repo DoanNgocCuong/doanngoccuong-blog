@@ -11,14 +11,10 @@
             "id": "b82d619012279768",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Untitled.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "Untitled"
+              "title": "New tab"
             }
           }
         ]
@@ -186,8 +182,51 @@
   },
   "active": "b82d619012279768",
   "lastOpenFiles": [
-    "(Published) Langfuse 1.12 - P1 - Langfuse Production Optimization - P1 Tổng kết danh sách sai lầm khi làm việc với Langfuse - Hành trình học hỏi, làm và sharing.md",
-    "Untitled.md",
-    "README.md"
+    "vercel.json",
+    "astro-blog/dist/sitemap-0.xml",
+    "astro-blog/dist/sitemap-index.xml",
+    "astro-blog/dist/_astro/blog-placeholder-4.gLBdjEDe_sXP1K.webp",
+    "astro-blog/dist/_astro/blog-placeholder-2.1WQRLJGH_2ml2Jq.webp",
+    "astro-blog/dist/_astro/blog-placeholder-1.Bx0Zcyzv_Z29X6w5.webp",
+    "astro-blog/dist/_astro/blog-placeholder-about.BtEdEmGp_Z2srqQK.webp",
+    "astro-blog/dist/_astro/blog-placeholder-5.CB3Xi-gp_Z1y5ehD.webp",
+    "astro-blog/dist/_astro/blog-placeholder-3.ijrf8Ohr_1S4sd1.webp",
+    "astro-blog/dist/_astro/blog-placeholder-4.gLBdjEDe_Z15Ss3d.webp",
+    "astro-blog/dist/_astro/blog-placeholder-2.1WQRLJGH_15TD1q.webp",
+    "astro-blog/dist/_astro/blog-placeholder-about.BtEdEmGp_2eecaz.webp",
+    "astro-blog/dist/_astro/blog-placeholder-1.Bx0Zcyzv_Z1v5W1C.webp",
+    "astro-blog/dist/index.html",
+    "astro-blog/dist/rss.xml",
+    "astro-blog/dist/blog/second-post/index.html",
+    "astro-blog/dist/blog/using-mdx/index.html",
+    "astro-blog/dist/blog/third-post/index.html",
+    "astro-blog/dist/blog/markdown-style-guide/index.html",
+    "astro-blog/dist/blog/langfuse-production-optimization-p1/index.html",
+    "astro-blog/dist/blog/first-post/index.html",
+    "astro-blog/src/content/blog/langfuse-production-optimization-p1.md",
+    "astro-blog/node_modules/@types/mdast/README.md",
+    "astro-blog/node_modules/ms/readme.md",
+    "astro-blog/node_modules/ms/license.md",
+    "astro-blog/node_modules/@img/sharp-win32-x64/README.md",
+    "astro-blog/node_modules/csso/README.md",
+    "astro-blog/node_modules/css-select/README.md",
+    "astro-blog/node_modules/entities/readme.md",
+    "astro-blog/node_modules/dom-serializer/node_modules/entities/readme.md",
+    "astro-blog/node_modules/vite/LICENSE.md",
+    "astro-blog/node_modules/js-yaml/README.md",
+    "astro-blog/node_modules/postcss/README.md",
+    "astro-blog/node_modules/regex/README.md",
+    "astro-blog/node_modules/sitemap/README.md",
+    "astro-blog/node_modules/sitemap/CODE_OF_CONDUCT.md",
+    "astro-blog/node_modules/vfile/readme.md",
+    "astro-blog/node_modules/source-map/README.md",
+    "astro-blog/node_modules/import-meta-resolve/readme.md",
+    "astro-blog/node_modules/style-to-object/README.md",
+    "astro-blog/node_modules/xxhash-wasm/README.md",
+    "astro-blog/node_modules/dom-serializer/README.md",
+    "astro-blog/node_modules/@rollup/pluginutils/node_modules/estree-walker/CHANGELOG.md",
+    "astro-blog/node_modules/commander/Readme.md",
+    "astro-blog/node_modules/yargs-parser/README.md",
+    "astro-blog/node_modules/acorn/README.md"
   ]
 }
