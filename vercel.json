@@ -1,8 +1,0 @@
-{
-  "version": 2,
-  "name": "doanngoccuong-blog-astro",
-  "framework": "astro",
-  "buildCommand": "cd astro-blog && npm run build",
-  "outputDirectory": "astro-blog/dist"
-}
-
