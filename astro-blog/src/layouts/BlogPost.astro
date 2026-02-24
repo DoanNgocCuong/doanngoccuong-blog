@@ -16,12 +16,13 @@ const { title, description, pubDate, updatedDate, heroImage, tags = [] } = Astro
 		<BaseHead title={title} description={description} />
 		<style>
 			main {
-				width: calc(100% - 2em);
+				width: 100%;
 				max-width: 100%;
 				margin: 0;
 			}
 			.hero-image {
 				width: 100%;
+				margin-bottom: 2rem;
 			}
 			.hero-image img {
 				display: block;
@@ -30,42 +31,57 @@ const { title, description, pubDate, updatedDate, heroImage, tags = [] } = Astro
 				box-shadow: var(--box-shadow);
 			}
 			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
+				width: 840px;
+				max-width: calc(100% - 3rem);
 				margin: auto;
 				padding: 1em;
 				color: rgb(var(--gray-dark));
 			}
 			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
+				margin-bottom: 2rem;
+				padding: 2rem 0;
 				text-align: center;
-				line-height: 1;
+				border-bottom: 1px solid rgb(var(--gray-light));
 			}
 			.title h1 {
 				margin: 0 0 0.5em 0;
+				font-size: 2.5rem;
+				background: linear-gradient(45deg, #1f2937, #4b5563);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
 			}
 			.tags {
-				margin: 0.25em 0 0;
+				margin: 1rem 0 0;
 				display: flex;
 				justify-content: center;
 				flex-wrap: wrap;
-				gap: 0.5em;
-				color: rgb(var(--gray));
-				font-size: 0.9em;
+				gap: 0.75em;
 			}
 			.tag {
-				padding: 0.1em 0.75em;
-				border-radius: 999px;
-				border: 1px solid rgba(var(--gray), 0.4);
-				background-color: rgba(var(--gray-light), 0.2);
+				padding: 0.2em 1em;
+				border-radius: 20px;
+				font-size: 0.85rem;
+				font-weight: 500;
+				letter-spacing: 0.02em;
+				border: 1px solid rgba(var(--gray), 0.2);
+				background-color: rgba(var(--gray-light), 0.4);
+				color: rgb(var(--gray-dark));
+				transition: all 0.2s ease;
+			}
+			.tag:hover {
+				background-color: var(--accent);
+				color: white;
+				border-color: var(--accent);
+				transform: translateY(-1px);
 			}
 			.date {
 				margin-bottom: 0.5em;
 				color: rgb(var(--gray));
+				font-weight: 500;
 			}
 			.last-updated-on {
 				font-style: italic;
+				font-size: 0.9rem;
 			}
 		</style>
 	</head>
