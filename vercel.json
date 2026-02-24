@@ -1,9 +1,8 @@
 {
   "version": 2,
   "name": "doanngoccuong-blog-astro",
-  "buildCommand": "cd astro-blog && npm install && npm run build",
-  "outputDirectory": "astro-blog/dist",
   "framework": "astro",
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD . || echo \"changes\""
+  "buildCommand": "cd astro-blog && npm run build",
+  "outputDirectory": "astro-blog/dist"
 }
 
