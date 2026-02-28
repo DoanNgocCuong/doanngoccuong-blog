@@ -2,7 +2,7 @@
 title: "Langfuse 1.12 - P1 - Langfuse Production Optimization"
 description: "Tổng kết danh sách sai lầm khi làm việc với Langfuse trên Production và cách tối ưu overhead."
 pubDate: "2026-02-14"
-heroImage: "../../assets/blog-placeholder-3.jpg"
+heroImage: "../../assets/langfuse/langfuse-dashboard-hero.png"
 tags:
   - langfuse
   - observability
@@ -21,7 +21,47 @@ tags:
     
 3. Sau này, khi có kinh nghiệm hơn, mình đã triển khai 1 service với response time < 150ms cho 100 CCU và mình dùng Langfuse để tracing. Mình nhận thấy 99% overhead ~ 10ms. Tuy nhiên 1% có những cú vút lên overhead lên đến 1s (so với bình thường chỉ 30ms), điều đó buộc mình đào sâu hơn cơ chế vận hành của Langfuse => Mình xin chia sẻ nó trong phần 2: **Vấn đề tranh chấp khoá và tranh chấp tài nguyên GIL. (Do cơ chế Langfusk SDK v3 hoàn toàn tương tự cách OpenTelemetry hoạt động, đều đẩy xuống 1 thread riêng: BatchSpanProcessor => gây ra vấn đề đề tranh chấp khoá và tranh chấp tài nguyên GIL)**
 
-# P1. Các sai lầm mình từng mắc phải khi làm việc với Langfuse
+# Phần Mở Đầu: Đôi dòng về Langfuse
+
+Langfuse là 1 nền tảng LLM Engineer mã nguồn mở được thiết kế đặc biệt để **observability toàn diện** cho các ứng dụng AI có sử dụng LLM (Large Language Models). 
+
+Langfuse được xây dựng dựa trên chuẩn OpenTelemetry (1 observability framework và toolkit nổi tiếng), điều này giúp Langfuse tương thích rộng với các hệ thống. 
+
++, Observability dựa trên **3 trụ cột nền tảng (MELT)**
+
+| Trụ cột     | Trả lời câu hỏi                    | Mô tả chi tiết                                                                                                                                                                                    | Ví dụ cụ thể                                                                                                                                                                          |
+| ----------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Metrics** | What? — Điều gì đang xảy ra?       | Các giá trị số được tổng hợp theo thời gian, dùng để theo dõi sức khỏe hệ thống, phát hiện bất thường và tạo alert. Thường là time-series, có thể aggregate theo service, endpoint, user, region. | Latency P95/P99, error rate, throughput (RPS/QPS), CPU/RAM/disk usage, số request timeout, số active users, queue length.                                                             |
+| **Logs**    | Why? — Tại sao xảy ra?             | Các bản ghi sự kiện chi tiết theo thời gian, thường ở dạng text/JSON, mô tả những gì hệ thống đã làm. Dùng để debug, audit, điều tra nguyên nhân gốc (root cause).                                | Error stack trace, warning khi retry nhiều lần, thông tin input/output rút gọn, message “payment failed vì timeout tới bank API”, security logs (login failed, permission denied).    |
+| **Traces**  | Where? — Xảy ra ở đâu trong luồng? | Chuỗi các span thể hiện đường đi của một request qua nhiều service, cho biết mỗi đoạn mất bao lâu và bottleneck nằm ở đâu. Dùng để hiểu kiến trúc phân tán và tối ưu end-to-end latency.          | Một request user → API Gateway → Service A → gọi Service B → truy vấn DB → gọi LLM, mỗi bước có start/end time, status, latency; nhìn vào trace thấy chậm ở Service B hoặc LLM call.  |
+
++, Với hệ thống AI/LLM, ngoài MELT cơ bản còn cần thêm các lớp sau:
+
+| Thành phần                           | Mục đích chính                             | Mô tả chi tiết                                                                                                                                                                                                 | Ví dụ trong thực tế                                                                                                                                                                                                     |
+| ------------------------------------ | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Prompt & Response Tracking**       | Hiểu model đang “nói gì” và tại sao        | Lưu toàn bộ input/output của LLM kèm metadata: model, phiên bản, temperature, top_p, system prompt, context được inject. <br>Đây là dạng **log đặc thù** cho LLM giúp replay, debug và audit.                  | Xem lại đúng prompt gây ra hallucination, so sánh output giữa GPT‑4.1 và Claude 3.7 với cùng 1 prompt, kiểm tra prompt nào vi phạm policy. [[splunk](https://www.splunk.com/en_us/blog/learn/opentelemetry.html)]​      |
+| **Token Usage & Cost Tracking**      | Kiểm soát chi phí & tối ưu hiệu suất       | Ghi lại số token input/output, tổng token, và quy đổi ra chi phí theo từng request, user, endpoint, model, project. Cho phép phát hiện route/model nào “đốt tiền” nhất.                                        | Dashboard chi phí theo ngày, phát hiện 1 feature mới dùng context quá dài khiến cost tăng 3x; set alert khi chi phí 1 user vượt ngưỡng. [[dynatrace](https://www.dynatrace.com/news/blog/what-is-opentelemetry/)]​      |
+| **Latency Breakdown**                | Tìm bottleneck trong pipeline              | Tách nhỏ thời gian xử lý thành: TTFT (Time to First Token), thời gian LLM generate, thời gian retrieval (vector DB), thời gian tool call, pre/post-processing. Giúp biết chính xác chậm ở đâu.                 | Thấy request tổng 8s: 2s ở retrieval, 5s chờ LLM, 1s post-process; quyết định đổi model nhanh hơn hoặc tối ưu embedding search. [[opentelemetry](https://opentelemetry.io/docs/what-is-opentelemetry/)]​                |
+| **LLM Evaluation / Quality Scoring** | Đo “chất lượng” output, không chỉ kỹ thuật | Gán điểm cho câu trả lời theo tiêu chí: correctness, helpfulness, coherence, toxicity, relevance… bằng LLM-as-a-judge hoặc feedback user (thumbs up/down, rating). Dùng để theo dõi chất lượng theo thời gian. | A/B test hai prompt template, dùng LLM judge chấm điểm; log tỷ lệ hallucination theo từng version model; đo NPS cho chatbot support. [[ibm](https://www.ibm.com/think/topics/opentelemetry)]​                           |
+| **Retrieval Analysis (RAG)**         | Đảm bảo model “đọc đúng tài liệu”          | Ghi lại các chunk được retrieve, điểm similarity, nguồn tài liệu, và đánh giá mức độ liên quan với câu hỏi. <br>Giúp phân biệt lỗi do retrieval kém hay do model trả lời sai.                                  | Phát hiện nhiều câu hỏi truy vấn nhầm collection, chunk retrieved không chứa keyword quan trọng; từ đó tune lại index, embedding, hoặc query. [[ibm](https://www.ibm.com/think/topics/opentelemetry)]​                  |
+| **Guardrails & Security**            | Bảo vệ hệ thống & người dùng               | Theo dõi và gắn nhãn các input/output nguy hiểm: prompt injection, jailbreak, PII leak, hate/violence, NSFW… Có thể tự động chặn, mask, hoặc thay thế response.                                                | Log và block các prompt kiểu “ignore all previous instructions…”, phát hiện output chứa số tài khoản, địa chỉ nhà; gửi alert cho security team. [[splunk](https://www.splunk.com/en_us/blog/learn/opentelemetry.html)]​ |
+
+```
+Observability
+├── 3 Pillars (Foundation)
+│   ├── Metrics  → Alert & Dashboard
+│   ├── Logs     → Debug & Audit
+│   └── Traces   → Request Flow Visualization
+│
+└── LLM Extensions
+    ├── Prompt/Response Tracking
+    ├── Token & Cost Tracking
+    ├── Latency (TTFT, E2E)
+    ├── Evaluation (Hallucination, Quality)
+    ├── Retrieval Analysis (RAG)
+    └── Guardrails (Security)
+```
+# Phần 1. Các sai lầm mình từng mắc phải khi làm việc với Langfuse
 
 ## 1.1 SAI LẦM 1: Khởi tạo mới Langfuse mỗi lần dùng => Gây overhead 0.1s  (Khởi tạo trước Langfuse 1 lần các lần sau chỉ việc dùng giúp giảm response time xuống 0.002s - 0.01s)
 
@@ -165,9 +205,9 @@ Chi tiết bên dưới:
    +, Mẹo: có thể dùng thêm orjson cho việc tối ưu xử lý JSON (đặc biệt hiệu quả với json dài)
 ```
 
-### 1.3.1 Ví dụ: Trong `robot_v2_services.webhook_service`
+### 1.3.1 Ví dụ: Trong `bot_services.webhook_service`
 
-- Ở đầu hàm `webhook_service`, ta sẽ đặt capture_input=False, **ghi metadata theo conversation** => điều này giúp làm giảm kích thước của JSON load vào Queue và sau đó bắn lên Langfuse (nói cách khác: chỉ đính kèm những trường “nhẹ” nhưng đủ để debug (ID + message tóm tắt + thông tin audio), không nhét cả payload to vào trace để tránh overhead & rò rỉ dữ liệu)
+- Ở đầu hàm `webhook_service`, ta sẽ đặt capture_input=False, **ghi metadata theo conversation** => điều này giúp làm giảm kích thước của JSON load vào Queue và sau đó bắn lên Langfuse (nói cách khác: chỉ đính kèm những trường “nhẹ” nhưng đủ để debug (ID + message tóm tắt + thông tin audio), không nhét cả payload to vào trace để tránh overhead & xảy ra vấn đề GIL (vấn đề giữ thread vì phải parser JSON quá to))
 
 ```python
 @observe(name="robot-v2.webhook-service", capture_input=False, capture_output=True)
@@ -183,7 +223,9 @@ if langfuse_client:
     langfuse_client.update_current_span(metadata=metadata)
 ```
 
-### 1.3.2 Sự khác nhau giữa các methods: update_current_trace, update_current_span, update_current_generation
+### 1.3.2 Vậy làm sao để chỉ trace các thứ quan trọng. 
+
+Chúng ta sử dụng các methods: update_current_trace, update_current_span, update_current_generation
 
 |                | `update_current_trace`                    | `update_current_span`                        | `update_current_generation`              |
 | -------------- | ----------------------------------------- | -------------------------------------------- | ---------------------------------------- |
@@ -204,12 +246,12 @@ Trace
 
 Dùng ở **route** (trước khi gọi service), vì lúc đó đang ở trace gốc:
 
-**File:** `app/api/routes/robot_v2_routes.py` (khoảng dòng 63–96)
+**File:** `app/api/routes/bot_routes.py` (khoảng dòng 63–96)
 
 ```python
 @router.post("/webhook")
 # @observe(name="robot-v2.webhook-route", ...)
-async def webhook(inputs: RobotV2Input, service: RobotV2Service = Depends(get_robot_v2_service)):
+async def webhook(inputs: RobotV2Input, service: RobotV2Service = Depends(get_bot_service)):
     conversation_id = inputs.conversation_id
     user_id = inputs.user_id
 
@@ -239,7 +281,7 @@ Tương tự cho `init_conversation`: cũng dùng `get_client()` rồi `langfuse
 Dùng **bên trong** các hàm đã được `@observe`, để gắn thêm thông tin cho đúng span đó.
 
 **Ví dụ 1 – trong webhook service (span `robot-v2.webhook-service`):**  
-**File:** `app/api/services/robot_v2_services.py` (khoảng 1343–1354)
+**File:** `app/api/services/bot_services.py` (khoảng 1343–1354)
 
 ```python
 @observe(name="robot-v2.webhook-service", capture_input=False, capture_output=True)
@@ -318,9 +360,10 @@ Trước đó code đã build `usage_details` (input/output tokens) và `cost_de
 
 > https://langfuse.com/changelog/2025-06-05-python-sdk-v3-generally-available
 
-### So sánh: `get_client()` vs `Langfuse()`
+### So sánh: Phiên bản mới `get_client()` vs Phiên bản cũ`Langfuse()`
 
 Đây là hai phương thức khởi tạo client của Langfuse Python SDK, với sự khác biệt quan trọng giữa các phiên bản SDK:
+
 
 #### **1. Phiên bản SDK**
 
