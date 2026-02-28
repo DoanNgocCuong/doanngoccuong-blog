@@ -139,9 +139,11 @@ Việc khởi tạo langfuse mỗi lần gây ra overhead lên đến 100ms-300m
 
 ## 1.2. SAI LẦM 2: TRACE QUÁ NHIỀU NẤC KHÔNG CẦN THIẾT (nấc lồng nhau)
 
-Link chi tiết: D:\GIT\robot-lesson-workflow\utils\docs\Stage1_OverheadOfLangFuse\log_trace_image\log2_Conclusion_0.01s_0.02s_overhead.md  + D:\GIT\robot-lesson-workflow\utils\docs\Stage1_OverheadOfLangFuse\log_trace_image\log3_Deployv1_OverheadLangfuse_20112025.md
+Chi tiết bên dưới:
 
-*(Hình minh họa overhead theo từng step – sẽ bổ sung lại ảnh sau khi chuẩn hóa thư mục assets trong Astro blog.)*
+![Overhead comparison - observe vs no observe](../../assets/langfuse/overhead-step-comparison-1.png)
+
+![Overhead comparison - detailed steps](../../assets/langfuse/overhead-step-comparison-2.png)
 
 > Nhìn vào 2 ảnh, hãy so sánh step 1, step 3 khi bật @observe và khi không bật => Ta thấy ngay bị overhead từ 3-10ms-300ms
 
@@ -337,7 +339,7 @@ Trước đó code đã build `usage_details` (input/output tokens) và `cost_de
 
 https://langfuse.com/docs/observability/sdk/overview
 
-*(Hình so sánh kiến trúc SDK v3 từ docs Langfuse – sẽ bổ sung lại ảnh sau khi chuẩn hóa thư mục assets trong Astro blog.)*
+![Langfuse SDK v3 Architecture - OpenTelemetry based](../../assets/langfuse/sdk-v3-architecture.png)
 
 **Quản lý instance**
 
