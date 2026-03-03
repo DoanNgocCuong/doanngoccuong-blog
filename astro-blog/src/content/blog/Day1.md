@@ -1,3 +1,11 @@
+---
+title: "Buổi 1: FastAPI + Docker Compose"
+description: "Học cách triển khai dịch vụ backend cơ bản với FastAPI và Docker Compose."
+pubDate: "2026-03-02"
+updatedDate: "2026-03-03"
+tags: ["FastAPI", "Docker", "Backend"]
+---
+
 # 🚀 BUỔI 1: FASTAPI + DOCKER COMPOSE — Production Service Foundation
 
 **Deadline nộp:** **Thứ 3, 11:59PM** — 
