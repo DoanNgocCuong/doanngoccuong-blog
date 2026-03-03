@@ -151,6 +151,9 @@ Nội dung comment cần kiểm tra:
 
 Nhắc nhở thành viên chưa nộp → tag anh nếu cần. Sau khi hoàn thành báo cáo “review done”.
 
+### Output 5
+Ace điền giúp Cường form feedback này để Cường hỗ trợ ace tốt nhất nhé. Thanks: [https://forms.gle/pHYsYKELCFptRKN9A](https://forms.gle/pHYsYKELCFptRKN9A)
+
 -----
 
 > **4 output hoàn thành = bài nộp đạt chuẩn.** Repo chạy thực tế, bảng tránh lỗi chứng minh tư duy kỹ thuật, video là tài liệu CV có giá trị thực.
