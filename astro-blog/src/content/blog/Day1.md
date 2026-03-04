@@ -148,6 +148,7 @@ Nội dung comment cần kiểm tra:
 - `AVOIDANCE_TABLE.md` đủ chưa không?
 - Video đã upload chưa?
 - `docker-compose up` chạy thành công không?
+- Sau đó điền link Github và Video của đồng đội vào đây: https://docs.google.com/spreadsheets/d/18RGv8EJW-A-2yWYV2y0-9oiWEXVt-r2GW1qTXJ_GF6k/edit?gid=22262218#gid=22262218
 
 Nhắc nhở thành viên chưa nộp → tag anh nếu cần. Sau khi hoàn thành báo cáo “review done”.
 
