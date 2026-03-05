@@ -3,7 +3,7 @@ title: "Challenge 1: ACTION to Fresher AI Engineer"
 description: "Một dự án phi lợi nhuận hướng tới các bạn sinh viên năm 3, năm 4 chuẩn bị thực tập và bước chân vào thị trường làm việc."
 pubDate: "2026-03-01"
 updatedDate: "2026-03-03"
-tags: ["AI", "Fresher", "Challenge"]
+tags: ["AI", "Fresher", "Challenge", "challenge-1"]
 ---
 
 ### THÔNG TIN QUAN TRỌNG: 
