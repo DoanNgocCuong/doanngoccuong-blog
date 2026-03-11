@@ -10,6 +10,22 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+
+// Group posts by folder (nested path)
+const groupedPosts = posts.reduce((acc, post) => {
+	const parts = post.id.split('/');
+	const folder = parts.length > 1 ? parts[0] : 'Root';
+	if (!acc[folder]) acc[folder] = [];
+	acc[folder].push(post);
+	return acc;
+}, {});
+
+// Sort folders: Root first, then alphabetical
+const sortedFolders = Object.keys(groupedPosts).sort((a, b) => {
+	if (a === 'Root') return -1;
+	if (b === 'Root') return 1;
+	return a.localeCompare(b);
+});
 ---
 
 <!doctype html>
@@ -69,6 +85,18 @@ const posts = (await getCollection('blog')).sort(
 			ul a:hover img {
 				box-shadow: var(--box-shadow);
 			}
+			.folder-header {
+				width: 100%;
+				margin: 1.5rem 0 0.5rem 0;
+				padding-bottom: 0.5rem;
+				border-bottom: 2px solid rgb(var(--gray));
+			}
+			.folder-header h3 {
+				margin: 0;
+				color: rgb(var(--black));
+				font-size: 1.25rem;
+				text-transform: capitalize;
+			}
 			@media (max-width: 720px) {
 				ul {
 					gap: 0.5em;
@@ -92,18 +120,25 @@ const posts = (await getCollection('blog')).sort(
 			<section>
 				<ul>
 					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
+						sortedFolders.map((folder) => (
+							<>
+								<li class="folder-header">
+									<h3>{folder === 'Root' ? '📁 Other Posts' : `📂 ${folder.replace(/-/g, ' ')}`}</h3>
+								</li>
+								{groupedPosts[folder].map((post) => (
+									<li>
+										<a href={`/blog/${post.id}/`}>
+											{post.data.heroImage && (
+												<Image width={720} height={360} src={post.data.heroImage} alt="" />
+											)}
+											<h4 class="title">{post.data.title}</h4>
+											<p class="date">
+												<FormattedDate date={post.data.pubDate} />
+											</p>
+										</a>
+									</li>
+								))}
+							</>
 						))
 					}
 				</ul>
