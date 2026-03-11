@@ -9,7 +9,7 @@ tags: ["RAG", "AI", "Challenge", "challenge-1", "week-2"]
 
 > **Deadline nộp:** **Chủ nhật, 11:59PM** (Thời gian làm: Thứ 2 → Chủ nhật) — Ace nộp bài dưới bài đăng nhé
 
->  bài này được soạn từ 20h tối - 3h rưỡi sáng ngày 11-12/3/2026 - Đoàn Ngọc Cường
+> Bài này được Cường soạn từ 20h tối - 3h rưỡi sáng ngày 11-12/3/2026 - Chúc ace học tốt nhé!
 
 ---
 
